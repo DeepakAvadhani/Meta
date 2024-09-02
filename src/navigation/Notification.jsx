@@ -1,5 +1,4 @@
-// NotificationScreen.js
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,41 +6,52 @@ import {
   TouchableOpacity,
   PermissionsAndroid,
 } from 'react-native';
-import messaging from '@react-native-firebase/messaging';
-import {app} from '../services/firebase.js';
+import PushNotification from 'react-native-push-notification';
 
 const NotificationScreen = () => {
-  const requestUserPermission = async () => {
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log('Notification permission granted');
-      } else {
-        console.log('Notification permission denied');
-      }
-    } catch (err) {
-      console.warn(err);
-    }
-  };
-
-  const getToken = async () => {
-    const fcmToken = await messaging().getToken();
-    if (fcmToken) {
-      console.log('Your Firebase Token: ', fcmToken);
-    } else {
-      console.log('Failed to get token');
-    }
-  };
-
   useEffect(() => {
+    const requestUserPermission = async () => {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('Notification permission granted');
+        } else {
+          console.log('Notification permission denied');
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    };
+
     requestUserPermission();
-    getToken();
+    configureChannels(); 
   }, []);
 
+  const configureChannels = () => {
+    PushNotification.createChannel(
+      {
+        channelId: 'default-channel-id', 
+        channelName: 'Default Channel', 
+        channelDescription: 'A default channel', 
+        playSound: true, 
+        soundName: 'default', 
+        importance: 4, 
+        vibrate: true,
+      },
+      (created) => console.log(`CreateChannel returned '${created}'`) 
+    );
+  };
+
   const handlePress = () => {
-    getToken();
+    PushNotification.localNotification({
+      channelId: 'default-channel-id', 
+      title: 'Hello!',
+      message: 'The notification button is clicked.',
+      playSound: true,
+      soundName: 'default',
+    });
   };
 
   return (
