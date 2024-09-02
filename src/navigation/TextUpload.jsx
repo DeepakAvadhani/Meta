@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Keyboard } from 'react-native';
-import { db } from '../services/firebase';
+import { db } from '../services/firebase.js'; 
 import { collection, addDoc, getDocs, query, orderBy, limit } from 'firebase/firestore';
 
 const TextUploadScreen = () => {
@@ -17,7 +17,7 @@ const TextUploadScreen = () => {
         });
         Alert.alert('Success', 'Text has been sent and saved!');
         setText(''); 
-        fetchText(); 
+        fetchText();
       } catch (error) {
         console.error('Error saving text: ', error);
         Alert.alert('Error', 'There was an issue saving your text. Please try again.');
@@ -33,6 +33,7 @@ const TextUploadScreen = () => {
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
         const latestText = querySnapshot.docs[0].data().text;
+        console.log('Fetched text:', latestText); 
         setFetchedText(latestText);
       } else {
         setFetchedText('No text has been uploaded yet.');
@@ -95,7 +96,7 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     borderWidth: 1,
     marginBottom: 20,
-    color:"black"
+    color: 'black'
   },
   button: {
     width: '100%',
